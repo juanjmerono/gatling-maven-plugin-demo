@@ -14,6 +14,10 @@
     <gatling.version>${project.version}</gatling.version>
     <gatling-plugin.version>2.2.0</gatling-plugin.version>
     <scala-maven-plugin.version>3.2.2</scala-maven-plugin.version>
+    <!-- Common Gatling Properties -->
+    <!-- Pause between request (seconds) -->
+    <minpause>1</minpause>
+    <maxpause>1</maxpause>
   </properties>
 
   <dependencies>
@@ -24,6 +28,24 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <profiles>
+  	<profile>
+  		<id>nightly-mysql</id>
+  		<activation>
+  			<activeByDefault>true</activeByDefault>
+  		</activation>
+  		<properties>
+  			<testurl>https://trunk-mysql.nightly.sakaiproject.org</testurl>
+  		</properties>
+  	</profile>
+  	<profile>
+  		<id>nightly-oracle</id>
+  		<properties>
+  			<testurl>https://trunk-oracle.nightly.sakaiproject.org</testurl>
+  		</properties>
+  	</profile>
+  </profiles>
 
   <build>
     <plugins>
@@ -36,6 +58,14 @@
         <groupId>io.gatling</groupId>
         <artifactId>gatling-maven-plugin</artifactId>
         <version>${gatling-plugin.version}</version>
+		<configuration>
+			<simulationClass>SakaiSimulation</simulationClass>
+			<jvmArgs>
+				<jvmArg>-Dtest-url=${testurl}</jvmArg>
+				<jvmArg>-Dmin-pause=${minpause}</jvmArg>
+				<jvmArg>-Dmax-pause=${maxpause}</jvmArg>
+			</jvmArgs>
+		</configuration>
         <executions>
           <execution>
             <goals>
