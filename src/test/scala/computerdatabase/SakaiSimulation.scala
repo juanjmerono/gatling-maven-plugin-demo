@@ -23,6 +23,7 @@ class SakaiSimulation extends Simulation {
 		.baseURL(System.getProperty("test-url"))
 		/**.inferHtmlResources(BlackList(".*(\.css|\.js|\.png|\.jpg|\.gif|thumb).*"), WhiteList())*/
 		.userAgentHeader("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
+		.extraInfoExtractor(extraInfo => List(extraInfo.request.getUrl,extraInfo.response.statusCode.get,extraInfo.response.bodyLength))
 
 	val headers = Map(
 		"Accept" -> "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
@@ -37,7 +38,7 @@ class SakaiSimulation extends Simulation {
 	object Gateway {
 		val gateway = group("Gateway") {
 			exec(http("Portal")
-				.get("/portal")
+				.get("portal")
 				.headers(headers)
 				.check(status.is(successStatus)))
 			.pause(pauseMin,pauseMax)
@@ -48,7 +49,7 @@ class SakaiSimulation extends Simulation {
 		val login = group("Login") {
 			feed(users)
 			.exec(http("XLogin")
-				.post("/portal/xlogin")
+				.post("portal/xlogin")
 				.headers(headers)
 				.formParam("eid", "${username}")
 				.formParam("pw", "${password}")
@@ -157,7 +158,7 @@ class SakaiSimulation extends Simulation {
 	object Logout {
 		val logout = group("Logout") {
 			exec(http("Logout")
-				.get("/portal/logout")
+				.get("portal/logout")
 				.headers(headers)
 				.check(status.is(successStatus)))
 		}
