@@ -18,6 +18,14 @@
     <!-- Pause between request (seconds) -->
     <minpause>1</minpause>
     <maxpause>1</maxpause>
+    <!-- Concurrent users -->
+    <targetUsers>1</targetUsers>
+    <rampUpTime>10</rampUpTime>
+    <!-- User Loop -->
+    <userLoop>1</userLoop>
+    <!-- Browse Loop -->
+    <siteLoop>1</siteLoop>
+    <toolLoop>1</toolLoop>
   </properties>
 
   <dependencies>
@@ -64,6 +72,11 @@
 				<jvmArg>-Dtest-url=${testurl}</jvmArg>
 				<jvmArg>-Dmin-pause=${minpause}</jvmArg>
 				<jvmArg>-Dmax-pause=${maxpause}</jvmArg>
+				<jvmArg>-Dtarget-users=${targetUsers}</jvmArg>
+				<jvmArg>-Drampup-time=${rampUpTime}</jvmArg>
+				<jvmArg>-Duser-loop=${userLoop}</jvmArg>
+				<jvmArg>-Dsite-loop=${siteLoop}</jvmArg>
+				<jvmArg>-Dtool-loop=${toolLoop}</jvmArg>
 			</jvmArgs>
 		</configuration>
         <executions>
