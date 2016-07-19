@@ -19,7 +19,7 @@
     <minpause>1</minpause>
     <maxpause>1</maxpause>
     <!-- Concurrent users -->
-    <randomUsers>0</randomUsers>
+    <randomUsers>1</randomUsers>
     <exhausUsers>1</exhausUsers>
     <rampUpTime>10</rampUpTime>
     <!-- User Loop -->
