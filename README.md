@@ -37,25 +37,33 @@ Setting Up Your Test
 
 There are several things you can tune in this test:
 
+- Test Name: You can add a name to identify your test the report will include the name and also the configurable values for the test.
+
+	$mvn gatling:execute -Dtestname=test-server-x
+
 - Target URL: You can change the URL for the test by typing
 
 	$mvn gatling:execute -Dtesturl=https://my-sakai-instance
 	
-- Concurrent Users and RampUp time: You can change the number of concurrent users and the time to rampup them by typing
+- Concurrent Users and RampUp time: You can change the number of concurrent users of each type and the time to rampup them by typing
 
-	$mvn gatling:execute -DtargetUsers=<Users> -DrampUpTime=<Seconds>
+	$mvn gatling:execute -DrandomUsers=<RandomUsers> -DexhausUsers=<ExhaustiveUsers> -DrampUpTime=<Seconds>
 	
 - Loops: You are able to repeat the test in different ways
 	
 	$mvn gatling:execute -DuserLoop=U -DsiteLoop=S -DtoolLoop=T
 
-	* userLoop: The test case is repeated N times (all the steps)
-	* siteLoop: For random users pick S random sites
-	* toolLoop: For random users pick T tools on each random site
+	* userLoop: Each user (random or exhaustive) repeat U times the test case (all the steps)
+	* siteLoop: For random users only pick S random sites
+	* toolLoop: For random users only pick T tools on each random site
+	
+- User credentials: There is one csv file data/user_credentials.csv to add test users to your test case. 
+	
 	
 Exploring the results
 =====================
 
 Gatling return an HTML report that gives you lot of information about the stress test.
 
-Please go to http://gatling.io/ to know more about it.
+Please go to http://gatling.io/docs/2.2.2/general/reports.html to know more about it.
+

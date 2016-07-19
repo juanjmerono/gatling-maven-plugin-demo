@@ -19,7 +19,8 @@
     <minpause>1</minpause>
     <maxpause>1</maxpause>
     <!-- Concurrent users -->
-    <targetUsers>1</targetUsers>
+    <randomUsers>0</randomUsers>
+    <exhausUsers>1</exhausUsers>
     <rampUpTime>10</rampUpTime>
     <!-- User Loop -->
     <userLoop>1</userLoop>
@@ -45,12 +46,28 @@
   		</activation>
   		<properties>
   			<testurl>https://trunk-mysql.nightly.sakaiproject.org</testurl>
+  			<testname>nightly-mysql</testname>
   		</properties>
   	</profile>
   	<profile>
   		<id>nightly-oracle</id>
   		<properties>
   			<testurl>https://trunk-oracle.nightly.sakaiproject.org</testurl>
+  			<testname>nightly-oracle</testname>
+  		</properties>
+  	</profile>
+  	<profile>
+  		<id>11x-mysql</id>
+  		<properties>
+  			<testurl>https://qa11-mysql.nightly.sakaiproject.org/</testurl>
+  			<testname>11x-mysql</testname>
+  		</properties>
+  	</profile>
+  	<profile>
+  		<id>11x-oracle</id>
+  		<properties>
+  			<testurl>https://qa11-oracle.nightly.sakaiproject.org/</testurl>
+  			<testname>11x-oracle</testname>
   		</properties>
   	</profile>
   </profiles>
@@ -67,12 +84,14 @@
         <artifactId>gatling-maven-plugin</artifactId>
         <version>${gatling-plugin.version}</version>
 		<configuration>
-			<simulationClass>SakaiSimulation</simulationClass>
+			<runMultipleSimulations>true</runMultipleSimulations>
+			<runDescription> #${testname} RU:[${randomUsers}] EU:[${exhausUsers}] UP:[${rampUpTime}] LOOP:[${userLoop},${siteLoop},${toolLoop}]</runDescription>
 			<jvmArgs>
 				<jvmArg>-Dtest-url=${testurl}</jvmArg>
 				<jvmArg>-Dmin-pause=${minpause}</jvmArg>
 				<jvmArg>-Dmax-pause=${maxpause}</jvmArg>
-				<jvmArg>-Dtarget-users=${targetUsers}</jvmArg>
+				<jvmArg>-Drandom-users=${randomUsers}</jvmArg>
+				<jvmArg>-Dexhaus-users=${exhausUsers}</jvmArg>
 				<jvmArg>-Drampup-time=${rampUpTime}</jvmArg>
 				<jvmArg>-Duser-loop=${userLoop}</jvmArg>
 				<jvmArg>-Dsite-loop=${siteLoop}</jvmArg>

@@ -5,13 +5,15 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import io.gatling.jdbc.Predef._
 import java.net._
+import scala.collection.mutable.ListBuffer
 
 class SakaiSimulation extends Simulation {
 
 	val successStatus: Int = 200
 	val pauseMin: Int = Integer.getInteger("min-pause",1)
 	val pauseMax: Int = Integer.getInteger("max-pause",1)
-	val targetUsers: Int = Integer.getInteger("target-users",1)
+	val randomUsers: Int = Integer.getInteger("random-users",1)
+	val exhausUsers: Int = Integer.getInteger("exhaus-users",1)
 	val rampUpTime: Int = Integer.getInteger("rampup-time",10)
 	val siteLoop: Int = Integer.getInteger("site-loop",1)
 	val toolLoop: Int = Integer.getInteger("tool-loop",1)
@@ -78,7 +80,7 @@ class SakaiSimulation extends Simulation {
 					.doIf("${frameUrls.exists()}") {
 						exec(session => { 
 							val myFrames: Vector[(String,String)] = (session("frameNames").as[Vector[String]] zip session("frameUrls").as[Vector[String]].map(s => URLDecoder.decode(s,"UTF-8")))
-							session.set("frames", util.Random.shuffle(myFrames))
+							session.set("frames", util.Random.shuffle(myFrames)).remove("frameUrls").remove("frameNames")
 						})
 						.foreach("${frames}","frame") {
 							exec(http("${frame._1}")
@@ -161,24 +163,31 @@ class SakaiSimulation extends Simulation {
 		}
 	}
 	
-	object SakaiSimulation {
+	object SakaiSimulationSteps {
 		val test = (random: Boolean) => repeat(userLoop) {
 			exec(Gateway.gateway,Login.login,BrowseSites.browse(random),Logout.logout)
 		}
 	}
 	
 
-	val randomUsersScn = scenario("SakaiRandomUserSimulation").exec(SakaiSimulation.test(true))
-	val exhaustiveUsersScn = scenario("SakaiExhaustiveUserSimulation").exec(SakaiSimulation.test(false))
+	val randomUsersScn = scenario("SakaiRandomUserSimulation").exec(SakaiSimulationSteps.test(true))
+	val exhaustiveUsersScn = scenario("SakaiExhaustiveUserSimulation").exec(SakaiSimulationSteps.test(false))
 
-	setUp(
-		randomUsersScn.inject(
-		    rampUsers(targetUsers) over (rampUpTime seconds)
-		    /** More options here http://gatling.io/docs/2.2.2/general/simulation_setup.html */
-		),
-		exhaustiveUsersScn.inject(
-		    rampUsers(targetUsers) over (rampUpTime seconds)
-		    /** More options here http://gatling.io/docs/2.2.2/general/simulation_setup.html */
-		)
-	).protocols(httpProtocol)
+	object Setup {
+		val scenario = ListBuffer[io.gatling.core.structure.PopulationBuilder]()
+		if (randomUsers>0) {
+			scenario += randomUsersScn.inject(
+			    rampUsers(randomUsers) over (rampUpTime seconds)
+			    /** More options here http://gatling.io/docs/2.2.2/general/simulation_setup.html */
+			)
+		}
+		if (exhausUsers>0) {
+			scenario += exhaustiveUsersScn.inject(
+			    rampUsers(exhausUsers) over (rampUpTime seconds)
+			    /** More options here http://gatling.io/docs/2.2.2/general/simulation_setup.html */
+			)
+		}
+	}
+
+	setUp(Setup.scenario.toList).protocols(httpProtocol)
 }
